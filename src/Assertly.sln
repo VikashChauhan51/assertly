@@ -5,6 +5,8 @@ VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assertly", "Assertly\Assertly.csproj", "{7E9C86A6-9271-482D-B660-AE7FAEADC9F3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assertly.Test", "Assertly.Test\Assertly.Test.csproj", "{1FC91B01-B148-4FFF-83AA-35B84399A592}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{7E9C86A6-9271-482D-B660-AE7FAEADC9F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E9C86A6-9271-482D-B660-AE7FAEADC9F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E9C86A6-9271-482D-B660-AE7FAEADC9F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FC91B01-B148-4FFF-83AA-35B84399A592}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FC91B01-B148-4FFF-83AA-35B84399A592}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FC91B01-B148-4FFF-83AA-35B84399A592}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FC91B01-B148-4FFF-83AA-35B84399A592}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
