@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
-namespace Assertly.Primitives.Core;
+namespace Assertly.Primitives;
 public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : AssertionsBase<T?>(subject)
     where T : struct, IComparable<T>
     where TAssertions : NumericAssertionsBase<T, TAssertions>
@@ -11,7 +11,7 @@ public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : Assert
     {
         ForCondition(Subject is T subject && subject.CompareTo(expected) == 0)
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context:value} to be {0}{reason}, but found {1}" + GenerateDifferenceMessage(expected), expected,
+        .FailWith("Expected {context:value} to be {0} {reason}, but found {1}" + GenerateDifferenceMessage(expected), expected,
             AssertionHelper.EnsureType(Subject));
 
         return new AndConstraint<TAssertions>((TAssertions)this);
@@ -21,7 +21,7 @@ public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : Assert
     {
         ForCondition(expected is { } value ? Subject is T subject && subject.CompareTo(value) == 0 : Subject is not T)
        .BecauseOf(because, becauseArgs)
-       .FailWith("Expected {context:value} to be {0}{reason}, but found {1}" + GenerateDifferenceMessage(expected), AssertionHelper.EnsureType(expected),
+       .FailWith("Expected {context:value} to be {0} {reason}, but found {1}" + GenerateDifferenceMessage(expected), AssertionHelper.EnsureType(expected),
            AssertionHelper.EnsureType(Subject));
 
         return new AndConstraint<TAssertions>((TAssertions)this);
@@ -32,7 +32,7 @@ public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : Assert
     {
         ForCondition(Subject is not T subject || subject.CompareTo(unexpected) != 0)
         .BecauseOf(because, becauseArgs)
-        .FailWith("Did not expect {context:value} to be {0}{reason}.", unexpected);
+        .FailWith("Did not expect {context:value} to be {0} {reason}.", unexpected);
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -41,7 +41,7 @@ public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : Assert
     {
         ForCondition(unexpected is { } value ? Subject is not T subject || subject.CompareTo(value) != 0 : Subject is T)
             .BecauseOf(because, becauseArgs)
-            .FailWith("Did not expect {context:value} to be {0}{reason}.", AssertionHelper.EnsureType(unexpected));
+            .FailWith("Did not expect {context:value} to be {0} {reason}.", AssertionHelper.EnsureType(unexpected));
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -71,7 +71,7 @@ public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : Assert
 
         ForCondition(Subject is T value && !IsNaN(value) && value.CompareTo(expected) < 0)
             .BecauseOf(because, becauseArgs)
-            .FailWith("Expected {context:value} to be less than {0}{reason}, but found {1}" + GenerateDifferenceMessage(expected),
+            .FailWith("Expected {context:value} to be less than {0} {reason}, but found {1}" + GenerateDifferenceMessage(expected),
                 expected, AssertionHelper.EnsureType(Subject));
 
         return new AndConstraint<TAssertions>((TAssertions)this);
@@ -88,7 +88,7 @@ public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : Assert
         ForCondition(Subject is T value && !IsNaN(value) && value.CompareTo(expected) <= 0)
             .BecauseOf(because, becauseArgs)
             .FailWith(
-                "Expected {context:value} to be less than or equal to {0}{reason}, but found {1}" +
+                "Expected {context:value} to be less than or equal to {0} {reason}, but found {1}" +
                 GenerateDifferenceMessage(expected), expected, AssertionHelper.EnsureType(Subject));
 
         return new AndConstraint<TAssertions>((TAssertions)this);
@@ -105,7 +105,7 @@ public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : Assert
         ForCondition(Subject is T subject && subject.CompareTo(expected) > 0)
             .BecauseOf(because, becauseArgs)
             .FailWith(
-                "Expected {context:value} to be greater than {0}{reason}, but found {1}" + GenerateDifferenceMessage(expected),
+                "Expected {context:value} to be greater than {0} {reason}, but found {1}" + GenerateDifferenceMessage(expected),
                 expected, AssertionHelper.EnsureType(Subject));
 
         return new AndConstraint<TAssertions>((TAssertions)this);
@@ -122,7 +122,7 @@ public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : Assert
         ForCondition(Subject is T subject && subject.CompareTo(expected) >= 0)
             .BecauseOf(because, becauseArgs)
             .FailWith(
-                "Expected {context:value} to be greater than or equal to {0}{reason}, but found {1}" +
+                "Expected {context:value} to be greater than or equal to {0} {reason}, but found {1}" +
                 GenerateDifferenceMessage(expected), expected, AssertionHelper.EnsureType(Subject));
 
         return new AndConstraint<TAssertions>((TAssertions)this);
@@ -171,7 +171,7 @@ public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : Assert
     {
         ForCondition(Subject is T value && validValues.Contains(value))
             .BecauseOf(because, becauseArgs)
-            .FailWith("Expected {context:value} to be one of {0}{reason}, but found {1}.", validValues, AssertionHelper.EnsureType(Subject));
+            .FailWith("Expected {context:value} to be one of {0} {reason}, but found {1}.", validValues, AssertionHelper.EnsureType(Subject));
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -216,7 +216,7 @@ public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : Assert
         ArgumentNullException.ThrowIfNull(predicate);
         ForCondition(Subject is T expression && predicate.Compile()(expression))
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context:value} to match {0}{reason}, but found {1}.", predicate.Body, AssertionHelper.EnsureType(Subject));
+        .FailWith("Expected {context:value} to match {0} {reason}, but found {1}.", predicate.Body, AssertionHelper.EnsureType(Subject));
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }

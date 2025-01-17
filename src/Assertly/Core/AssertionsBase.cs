@@ -72,6 +72,7 @@ public abstract class AssertionsBase<T>
     }
 
     protected object EnsureSubject() => AssertionHelper.EnsureType(Subject);
+    protected object EnsureType(object? type) => AssertionHelper.EnsureType(type);
 
     /// <inheritdoc/>
     public override bool Equals(object obj)
