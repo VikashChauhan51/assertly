@@ -1,4 +1,4 @@
-﻿namespace Assertly;
+﻿namespace Assertly.Core;
 public class AndConstraint<TParent>
 {
     public TParent And { get; }

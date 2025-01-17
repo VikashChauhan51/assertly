@@ -2,16 +2,18 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace Assertly;
-
-public class AssertionChain 
+namespace Assertly.Core;
+public abstract class AssertionsBase<T>
 {
-    private readonly List<string> failures = [];
-    private const string context = "object";
+    protected readonly T? Subject;
     private bool? succeeded;
     private Func<string>? reason;
+    protected AssertionsBase(T? subject)
+    {
+        Subject = subject;
+    }
 
-    public AssertionChain ForCondition(bool condition)
+    public AssertionsBase<T> ForCondition(bool condition)
     {
         if (!succeeded.HasValue || succeeded.Value)
         {
@@ -20,8 +22,7 @@ public class AssertionChain
         return this;
     }
 
-
-    public AssertionChain BecauseOf(string because, params object[] becauseArgs)
+    public AssertionsBase<T> BecauseOf(string because, params object[] becauseArgs)
     {
         reason = () =>
         {
@@ -41,46 +42,58 @@ public class AssertionChain
 
         return this;
     }
-    public AssertionChain FailWith(object? expected, object? actual)
+    public void FailWith(string message, params object[] messageArgs)
     {
         if (succeeded.HasValue && !succeeded.Value)
         {
-            var (caller, field) = DetermineCallerIdentity();
-            object?[] args = [field, expected, reason?.Invoke() ?? string.Empty, actual];
-            string formattedMessage = string.Format(CultureInfo.InvariantCulture, "Expected {0} to be {1} {2}, but found {3}.", args);
-            failures.Add($"{caller}:{formattedMessage}");
-            succeeded = null;
-        }
-        return this;
-    }
+            var (caller, callerIdentifier) = DetermineCallerIdentity();
 
-    public bool HasFailures => failures.Count > 0;
-
-    public string GetFailures()
-    {
-        return string.Join(Environment.NewLine, failures);
-    }
-
-    public void Validation()
-    {
-        if (HasFailures)
-        {
-            var message = GetFailures();
+            var formattedMessage = new FailureMessageFormatter()
+                 .WithReason(reason?.Invoke() ?? string.Empty)
+                 .WithIdentifier(callerIdentifier ?? "object")
+                 .Format(message, messageArgs);
             Reset();
-            throw new AssertlyException(message);
+            throw new AssertlyException($"{caller}:{formattedMessage}");
         }
     }
-    private static (string caller, string field) DetermineCallerIdentity()
+
+    public void FailWith(Action<string> onFailuer, string message, params object[] messageArgs)
+    {
+        if (succeeded.HasValue && !succeeded.Value)
+        {
+            var (caller, callerIdentifier) = DetermineCallerIdentity();
+            var formattedMessage = new FailureMessageFormatter()
+                 .WithReason(reason?.Invoke() ?? string.Empty)
+                 .WithIdentifier(callerIdentifier ?? "object")
+                 .Format(message, messageArgs);
+            Reset();
+            onFailuer($"{caller}:{formattedMessage}");
+        }
+    }
+
+    protected object EnsureSubject() => AssertionHelper.EnsureType(Subject);
+
+    /// <inheritdoc/>
+    public override bool Equals(object obj)
+    {
+        throw new NotSupportedException("Equals is not part of Assertly. Did you mean Be() instead?");
+    }
+
+    public override int GetHashCode()
+    {
+        return Subject?.GetHashCode() ?? 0;
+    }
+    private static (string caller, string? callerIdentifier) DetermineCallerIdentity()
     {
         string? caller = null;
-        string? field = null;
+        string? callerIdentifier = null;
         try
         {
             var stack = new StackTrace(fNeedFileInfo: true);
             var allStackFrames = stack.GetFrames();
 
             int lastUserStackFrameBeforeFrameworkCodeIndex = Array.FindIndex(allStackFrames,
-                frame => frame.GetMethod()?.DeclaringType?.Assembly != typeof(AssertionChain).Assembly);
+                frame => frame.GetMethod()?.DeclaringType?.Assembly != typeof(AssertionsBase<>).Assembly);
             if (lastUserStackFrameBeforeFrameworkCodeIndex >= 0)
             {
                 var frame = allStackFrames[lastUserStackFrameBeforeFrameworkCodeIndex];
@@ -91,19 +104,18 @@ public class AssertionChain
                     var declaringType = method.DeclaringType?.FullName;
                     caller = $"{declaringType}.{property}";
                 }
-                field = ExtractVariableNameFrom(frame);
+                callerIdentifier = ExtractVariableNameFrom(frame);
             }
         }
         catch
         {
             // Ignore exceptions
         }
-        return (caller ?? "Unknown Caller", field ?? context);
+        return (caller ?? string.Empty, callerIdentifier);
     }
-
     private static string? ExtractVariableNameFrom(StackFrame frame)
     {
-        string? field = null;
+        string? callerIdentifier = null;
         string? statement = GetSourceCodeStatementFrom(frame);
 
         if (!string.IsNullOrEmpty(statement) &&
@@ -112,16 +124,14 @@ public class AssertionChain
             !IsStringLiteral(statement) &&
             !StartsWithNewKeyword(statement))
         {
-            var match = Regex.Match(statement, @"(\w+)\.Should\(\)");
+            var match = Regex.Match(statement, @"(.+)\.Assert\(\)");
             if (match.Success)
             {
-                field = match.Groups[1].Value;
+                callerIdentifier = match.Groups[1].Value;
             }
         }
-
-        return field;
+        return callerIdentifier;
     }
-
     private static string? GetSourceCodeStatementFrom(StackFrame frame)
     {
         var fileName = frame.GetFileName();
@@ -147,7 +157,6 @@ public class AssertionChain
             return null;
         }
     }
-
     private static bool IsBooleanLiteral(string statement) => statement == "true" || statement == "false";
     private static bool IsNumeric(string statement) => double.TryParse(statement, out _);
     private static bool IsStringLiteral(string statement) => statement.StartsWith("\"") && statement.EndsWith("\"");
@@ -156,9 +165,5 @@ public class AssertionChain
     {
         reason = null;
         succeeded = null;
-        failures.Clear();
     }
 }
-
-
-

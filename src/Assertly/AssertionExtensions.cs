@@ -1,23 +1,24 @@
-﻿using Assertly.Primitives;
+﻿using Assertly.Core;
+using Assertly.Primitives;
 
 namespace Assertly;
 public static class AssertionExtensions
 {
 
-    public static BooleanAssertions Should(this bool? actualValue)
+    public static BooleanAssertions Assert(this bool? actualValue)
     {
         if (!actualValue.HasValue)
         {
-            return new BooleanAssertions(null, new AssertionChain());
+            return new BooleanAssertions(null);
         }
 
-        return new BooleanAssertions(actualValue.Value, new AssertionChain());
+        return new BooleanAssertions(actualValue.Value);
     }
 
-    public static BooleanAssertions Should(this bool actualValue)
+    public static BooleanAssertions Assert(this bool actualValue)
     {
 
-        return new BooleanAssertions(actualValue, new AssertionChain());
+        return new BooleanAssertions(actualValue);
     }
 }
 

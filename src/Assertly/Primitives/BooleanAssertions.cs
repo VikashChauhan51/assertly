@@ -1,53 +1,39 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using Assertly.Core;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Assertly.Primitives;
-public class BooleanAssertions(bool? value, AssertionChain assertionChain) :
-    BooleanAssertions<BooleanAssertions>(value, assertionChain)
+public class BooleanAssertions(bool? value) :
+    BooleanAssertions<BooleanAssertions>(value)
 {
 }
 
-public class BooleanAssertions<TAssertions>
+public class BooleanAssertions<TAssertions>(bool? value) : AssertionsBase<bool?>(value)
     where TAssertions : BooleanAssertions<TAssertions>
 {
-    private readonly bool? subject;
-    private readonly AssertionChain assertionChain;
-    public BooleanAssertions(bool? value, AssertionChain assertionChain)
-    {
-        subject = value;
-        this.assertionChain = assertionChain;
-    }
 
     public AndConstraint<TAssertions> BeTrue([StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
-        assertionChain
-            .ForCondition(subject == true)
-            .BecauseOf(because, becauseArgs)
-            .FailWith(true, subject != null ? subject : "Null")
-            .Validation();
-
-
+        ForCondition(Subject == true)
+             .BecauseOf(because, becauseArgs)
+             .FailWith("Expected {context:boolean} to be {0} {reason}, but found {1}.", true, EnsureSubject());
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
 
     public AndConstraint<TAssertions> BeFalse([StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
-        assertionChain
-            .ForCondition(subject == false)
+        ForCondition(Subject == false)
             .BecauseOf(because, becauseArgs)
-            .FailWith(false, subject != null ? subject : "Null")
-            .Validation();
+            .FailWith("Expected {context:boolean} to be {0} {reason}, but found {1}.", false, EnsureSubject());
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
 
     public AndConstraint<TAssertions> BeNull([StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
-        assertionChain
-            .ForCondition(subject == null)
+        ForCondition(Subject == null)
             .BecauseOf(because, becauseArgs)
-            .FailWith("Null", subject)
-            .Validation();
+            .FailWith("Expected {context:boolean} to be {0} {reason}, but found {1}.", AssertionConstants.Null, EnsureSubject());
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -55,25 +41,19 @@ public class BooleanAssertions<TAssertions>
 
     public AndConstraint<TAssertions> Be(bool? expected, [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
-        assertionChain
-            .ForCondition(subject == expected)
+        ForCondition(Subject == expected)
             .BecauseOf(because, becauseArgs)
-            .FailWith(expected != null ? expected : "Null", subject != null ? subject : "Null")
-            .Validation();
+            .FailWith("Expected {context:boolean} to be {0} {reason}, but found {1}.", AssertionHelper.EnsureType(expected), EnsureSubject());
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
 
     public AndConstraint<TAssertions> NotBe(bool? unexpected, [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
-        assertionChain
-            .ForCondition(subject != unexpected)
+        ForCondition(Subject != unexpected)
             .BecauseOf(because, becauseArgs)
-            .FailWith(unexpected != null ? unexpected : "Null", subject != null ? subject : "Null")
-            .Validation();
+            .FailWith("Expected {context:boolean} not to be {0} {reason}, but found {1}.", AssertionHelper.EnsureType(unexpected), EnsureSubject());
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
-
-
 }
