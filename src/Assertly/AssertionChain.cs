@@ -4,11 +4,12 @@ using System.Text.RegularExpressions;
 
 namespace Assertly;
 
-public class AssertionChain
+public class AssertionChain 
 {
-    private readonly List<string> failures = new List<string>();
-    private string context = "object";
+    private readonly List<string> failures = [];
+    private const string context = "object";
     private bool? succeeded;
+    private Func<string>? reason;
 
     public AssertionChain ForCondition(bool condition)
     {
@@ -20,15 +21,33 @@ public class AssertionChain
     }
 
 
-    public AssertionChain FailWith(params object[] args)
+    public AssertionChain BecauseOf(string because, params object[] becauseArgs)
+    {
+        reason = () =>
+        {
+            try
+            {
+                string becauseOrEmpty = because ?? string.Empty;
+
+                return becauseArgs?.Length > 0
+                    ? string.Format(CultureInfo.InvariantCulture, becauseOrEmpty, becauseArgs)
+                    : becauseOrEmpty;
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        };
+
+        return this;
+    }
+    public AssertionChain FailWith(object? expected, object? actual)
     {
         if (succeeded.HasValue && !succeeded.Value)
         {
             var (caller, field) = DetermineCallerIdentity();
-            var finalArgs = new object[args.Length + 1];
-            finalArgs[0] = field;
-            args.CopyTo(finalArgs, 1);
-            string formattedMessage = string.Format(CultureInfo.InvariantCulture, "Expected {0} to be {1}, but found {2}.", finalArgs);
+            object?[] args = [field, expected, reason?.Invoke() ?? string.Empty, actual];
+            string formattedMessage = string.Format(CultureInfo.InvariantCulture, "Expected {0} to be {1} {2}, but found {3}.", args);
             failures.Add($"{caller}:{formattedMessage}");
             succeeded = null;
         }
@@ -42,7 +61,16 @@ public class AssertionChain
         return string.Join(Environment.NewLine, failures);
     }
 
-    private (string caller, string field) DetermineCallerIdentity()
+    public void Validation()
+    {
+        if (HasFailures)
+        {
+            var message = GetFailures();
+            Reset();
+            throw new AssertlyException(message);
+        }
+    }
+    private static (string caller, string field) DetermineCallerIdentity()
     {
         string? caller = null;
         string? field = null;
@@ -76,19 +104,18 @@ public class AssertionChain
     private static string? ExtractVariableNameFrom(StackFrame frame)
     {
         string? field = null;
-        string statement = GetSourceCodeStatementFrom(frame);
+        string? statement = GetSourceCodeStatementFrom(frame);
 
-        if (!string.IsNullOrEmpty(statement))
+        if (!string.IsNullOrEmpty(statement) &&
+            !IsBooleanLiteral(statement) &&
+            !IsNumeric(statement) &&
+            !IsStringLiteral(statement) &&
+            !StartsWithNewKeyword(statement))
         {
-
-            if (!IsBooleanLiteral(statement) && !IsNumeric(statement) && !IsStringLiteral(statement) &&
-                !StartsWithNewKeyword(statement))
+            var match = Regex.Match(statement, @"(\w+)\.Should\(\)");
+            if (match.Success)
             {
-                var match = Regex.Match(statement, @"(\w+)\.Should\(\)");
-                if (match.Success)
-                {
-                    field = match.Groups[1].Value;
-                }
+                field = match.Groups[1].Value;
             }
         }
 
@@ -125,6 +152,12 @@ public class AssertionChain
     private static bool IsNumeric(string statement) => double.TryParse(statement, out _);
     private static bool IsStringLiteral(string statement) => statement.StartsWith("\"") && statement.EndsWith("\"");
     private static bool StartsWithNewKeyword(string statement) => statement.StartsWith("new ");
+    private void Reset()
+    {
+        reason = null;
+        succeeded = null;
+        failures.Clear();
+    }
 }
 
 
