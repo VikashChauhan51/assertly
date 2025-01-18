@@ -1,4 +1,6 @@
 ﻿using Assertly.Primitives;
+using Assertly.Types;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Assertly;
 public static class AssertionExtensions
@@ -255,5 +257,13 @@ public static class AssertionExtensions
     public static EnumAssertions<TEnum> Assert<TEnum>(this TEnum actualValue) where TEnum : struct, Enum
     {
         return new EnumAssertions<TEnum>(actualValue);
+    }
+    public static ComparableTypeAssertions<T> Assert<T>([NotNull] this IComparable<T> comparableValue)
+    {
+        return new ComparableTypeAssertions<T>(comparableValue);
+    }
+    public static TypeAssertions Should([NotNull] this Type subject)
+    {
+        return new TypeAssertions(subject);
     }
 }

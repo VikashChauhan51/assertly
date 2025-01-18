@@ -1,10 +1,9 @@
-﻿using Assertly.Core;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 
-namespace Assertly.Primitives.Core;
-public abstract class ReferenceTypeAssertions<TSubject, TAssertions>(TSubject subject) : AssertionsBase<TSubject>(subject)
+namespace Assertly.Core;
+public abstract class ReferenceTypeAssertions<TSubject, TAssertions>(TSubject? subject) : AssertionsBase<TSubject>(subject)
     where TAssertions : ReferenceTypeAssertions<TSubject, TAssertions>
 {
 
