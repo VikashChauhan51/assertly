@@ -1,5 +1,5 @@
 ﻿namespace Assertly.Core;
-internal class AssertionConstants
+internal static class AssertionConstants
 {
-    public const string Null = "null";
+    public const string Null = "<null>";
 }

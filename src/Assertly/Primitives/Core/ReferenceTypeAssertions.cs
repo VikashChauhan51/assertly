@@ -1,6 +1,5 @@
 ﻿using Assertly.Core;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection.Metadata;
 
 
 namespace Assertly.Primitives.Core;
@@ -12,7 +11,7 @@ public abstract class ReferenceTypeAssertions<TSubject, TAssertions>(TSubject su
     {
         ForCondition(Subject is null)
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context} to be <null>{reason}, but found {0}.", Subject);
+        .FailWith("Expected {context} to be <null>{reason}, but found {0}.", EnsureSubject());
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -30,7 +29,7 @@ public abstract class ReferenceTypeAssertions<TSubject, TAssertions>(TSubject su
     {
         ForCondition(ReferenceEquals(Subject, expected))
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context} to refer to {0}{reason}, but found {1}.", expected, Subject);
+        .FailWith("Expected {context} to refer to {0}{reason}, but found {1}.", EnsureType(expected), EnsureSubject());
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -42,7 +41,7 @@ public abstract class ReferenceTypeAssertions<TSubject, TAssertions>(TSubject su
     {
         ForCondition(!ReferenceEquals(Subject, unexpected))
         .BecauseOf(because, becauseArgs)
-        .FailWith("Did not expect {context} to refer to {0}{reason}.", unexpected);
+        .FailWith("Did not expect {context} to refer to {0}{reason}.", EnsureType(unexpected));
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -108,7 +107,7 @@ public abstract class ReferenceTypeAssertions<TSubject, TAssertions>(TSubject su
 
         ForCondition(Subject is not null && type.IsAssignableFrom(Subject.GetType()))
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context} to be assignable to {0}{reason}, but {1} is not.", type, Subject.GetType());
+        .FailWith("Expected {context} to be assignable to {0}{reason}, but {1} is not.", type, EnsureType(Subject?.GetType()));
 
 
         return new AndConstraint<TAssertions>((TAssertions)this);
