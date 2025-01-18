@@ -1,4 +1,5 @@
-﻿using Assertly.Primitives;
+﻿using Assertly.Collections;
+using Assertly.Primitives;
 using Assertly.Types;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
@@ -278,5 +279,9 @@ public static class AssertionExtensions
     public static AssemblyAssertions Assert([NotNull] this Assembly assembly)
     {
         return new AssemblyAssertions(assembly);
+    }
+    public static GenericCollectionAssertions<T> Assert<T>([NotNull] this IEnumerable<T> actualValue)
+    {
+        return new GenericCollectionAssertions<T>(actualValue);
     }
 }
