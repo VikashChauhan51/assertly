@@ -1,5 +1,6 @@
 ﻿using Assertly.Core;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 
 
 namespace Assertly.Primitives.Core;
@@ -109,6 +110,19 @@ public abstract class ReferenceTypeAssertions<TSubject, TAssertions>(TSubject su
         .BecauseOf(because, becauseArgs)
         .FailWith("Expected {context} to be assignable to {0}{reason}, but {1} is not.", type, EnsureType(Subject?.GetType()));
 
+
+        return new AndConstraint<TAssertions>((TAssertions)this);
+    }
+
+    public AndConstraint<TAssertions> Match<T>(Expression<Func<T, bool>> predicate,
+        [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
+        where T : TSubject
+    {
+        ArgumentNullException.ThrowIfNull(predicate);
+
+        ForCondition(predicate.Compile()((T)Subject!))
+        .BecauseOf(because, becauseArgs)
+        .FailWith("Expected {context:object} to match {1}{reason}, but found {0}.", EnsureType(Subject), predicate);
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
