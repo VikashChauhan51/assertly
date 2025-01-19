@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using VReflector;
-namespace Assertly.Core;
+namespace Assertly;
 public abstract class ReferenceTypeAssertions<TSubject, TAssertions>(TSubject? subject) : AssertionsBase<TSubject>(subject)
     where TAssertions : ReferenceTypeAssertions<TSubject, TAssertions>
 {

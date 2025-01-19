@@ -1,8 +1,9 @@
-﻿using System.Diagnostics;
+﻿using Assertly.Core;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace Assertly.Core;
+namespace Assertly;
 public abstract class AssertionsBase<T>
 {
     protected readonly T? Subject;

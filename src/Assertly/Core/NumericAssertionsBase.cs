@@ -1,8 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using Assertly.Core;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using VReflector;
 
-namespace Assertly.Core;
+namespace Assertly;
 public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : AssertionsBase<T?>(subject)
     where T : struct, IComparable<T>
     where TAssertions : NumericAssertionsBase<T, TAssertions>

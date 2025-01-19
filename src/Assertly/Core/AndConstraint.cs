@@ -1,4 +1,4 @@
-﻿namespace Assertly.Core;
+﻿namespace Assertly;
 
 /// <summary>
 /// Initializes a new instance of the <see cref="AndConstraint{T}"/> class.
