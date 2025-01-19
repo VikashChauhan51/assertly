@@ -15,7 +15,7 @@ public class ObjectAssertions(object? value): ObjectAssertions<object, ObjectAss
     {
         ForCondition(expected is not null && Subject is not null && expected.Equals(Subject))
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context} to be equivalent to {0}{reason}, but found {1}.", EnsureType(expected), EnsureType(Subject));
+        .FailWith("Expected {context} to be equivalent to {0} {reason}, but found {1}.", EnsureType(expected), EnsureType(Subject));
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -24,7 +24,7 @@ public class ObjectAssertions(object? value): ObjectAssertions<object, ObjectAss
     {
         ForCondition(Subject is not null && !Subject.Equals(unexpected))
         .BecauseOf(because, becauseArgs)
-        .FailWith("Did not expect {context} to be equivalent to {0}{reason}.", EnsureType(unexpected));
+        .FailWith("Did not expect {context} to be equivalent to {0} {reason}.", EnsureType(unexpected));
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -33,7 +33,7 @@ public class ObjectAssertions(object? value): ObjectAssertions<object, ObjectAss
     {
         ForCondition(Subject is not null && other is not null && Subject.GetHashCode() == other.GetHashCode())
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context} to have the same hash code as {0}{reason}, but found {1}.", EnsureType(other), EnsureType(Subject));
+        .FailWith("Expected {context} to have the same hash code as {0} {reason}, but found {1}.", EnsureType(other), EnsureType(Subject));
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -42,7 +42,7 @@ public class ObjectAssertions(object? value): ObjectAssertions<object, ObjectAss
     {
         ForCondition(Subject is not null && other is not null && Subject.GetHashCode() != other.GetHashCode())
         .BecauseOf(because, becauseArgs)
-        .FailWith("Did not expect {context} to have the same hash code as {0}{reason}, but found {1}.", EnsureType(other), EnsureType(Subject));
+        .FailWith("Did not expect {context} to have the same hash code as {0} {reason}, but found {1}.", EnsureType(other), EnsureType(Subject));
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -52,7 +52,7 @@ public class ObjectAssertions(object? value): ObjectAssertions<object, ObjectAss
         var defaultValue = default(TSubject);
         ForCondition(Equals(Subject, defaultValue))
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context} to have the default value {0}{reason}, but found {1}.", defaultValue, EnsureType(Subject));
+        .FailWith("Expected {context} to have the default value {0} {reason}, but found {1}.", defaultValue, EnsureType(Subject));
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -62,7 +62,7 @@ public class ObjectAssertions(object? value): ObjectAssertions<object, ObjectAss
         var defaultValue = default(TSubject);
         ForCondition(!Equals(Subject, defaultValue))
         .BecauseOf(because, becauseArgs)
-        .FailWith("Did not expect {context} to have the default value {0}{reason}, but found {1}.", defaultValue, EnsureType(Subject));
+        .FailWith("Did not expect {context} to have the default value {0} {reason}, but found {1}.", defaultValue, EnsureType(Subject));
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }

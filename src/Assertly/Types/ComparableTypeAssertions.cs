@@ -19,7 +19,7 @@ public class ComparableTypeAssertions<T, TAssertions>(IComparable<T> value) : Re
 
         ForCondition(IsEquals(Subject, expected))
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context:object} to be equal to {0}{reason}, but found {1}.", expected, Subject);
+        .FailWith("Expected {context:object} to be equal to {0} {reason}, but found {1}.", expected, Subject);
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -28,7 +28,7 @@ public class ComparableTypeAssertions<T, TAssertions>(IComparable<T> value) : Re
     {
         ForCondition(!IsEquals(Subject, unexpected))
         .BecauseOf(because, becauseArgs)
-        .FailWith("Did not expect {context:object} to be equal to {0}{reason}.", unexpected);
+        .FailWith("Did not expect {context:object} to be equal to {0} {reason}.", unexpected);
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -38,7 +38,7 @@ public class ComparableTypeAssertions<T, TAssertions>(IComparable<T> value) : Re
 
         ForCondition(Subject?.CompareTo(expected) == Equal)
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context:object} {0} to be ranked as equal to {1}{reason}.", Subject, expected);
+        .FailWith("Expected {context:object} {0} to be ranked as equal to {1} {reason}.", Subject, expected);
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -48,7 +48,7 @@ public class ComparableTypeAssertions<T, TAssertions>(IComparable<T> value) : Re
 
         ForCondition(Subject?.CompareTo(unexpected) != Equal)
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context:object} {0} not to be ranked as equal to {1}{reason}.", Subject, unexpected);
+        .FailWith("Expected {context:object} {0} not to be ranked as equal to {1} {reason}.", Subject, unexpected);
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -58,7 +58,7 @@ public class ComparableTypeAssertions<T, TAssertions>(IComparable<T> value) : Re
 
         ForCondition(Subject?.CompareTo(expected) < Equal)
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context:object} {0} to be less than {1}{reason}.", Subject, expected);
+        .FailWith("Expected {context:object} {0} to be less than {1} {reason}.", Subject, expected);
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -68,7 +68,7 @@ public class ComparableTypeAssertions<T, TAssertions>(IComparable<T> value) : Re
 
         ForCondition(Subject?.CompareTo(expected) <= Equal)
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context:object} {0} to be less than or equal to {1}{reason}.", Subject, expected);
+       .FailWith("Expected {context:object} {0} to be less than or equal to {1} {reason}.", Subject, expected);
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -79,7 +79,7 @@ public class ComparableTypeAssertions<T, TAssertions>(IComparable<T> value) : Re
 
         ForCondition(Subject?.CompareTo(expected) > Equal)
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context:object} {0} to be greater than {1}{reason}.", Subject, expected);
+        .FailWith("Expected {context:object} {0} to be greater than {1} {reason}.", Subject, expected);
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -88,7 +88,7 @@ public class ComparableTypeAssertions<T, TAssertions>(IComparable<T> value) : Re
     {
         ForCondition(Subject?.CompareTo(expected) >= Equal)
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context:object} {0} to be greater than or equal to {1}{reason}.", Subject, expected);
+        .FailWith("Expected {context:object} {0} to be greater than or equal to {1} {reason}.", Subject, expected);
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }

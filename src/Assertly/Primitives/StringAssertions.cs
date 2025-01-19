@@ -14,7 +14,7 @@ public class StringAssertions<TAssertions>(string? subject) : ReferenceTypeAsser
     {
         ForCondition(Subject != null && Subject == expected)
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context} to be {0}{reason}, but found {1}.", expected, Subject);
+        .FailWith("Expected {context} to be {0} {reason}, but found {1}.", expected, Subject);
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -23,7 +23,7 @@ public class StringAssertions<TAssertions>(string? subject) : ReferenceTypeAsser
     {
         ForCondition(Subject != null && Subject != unexpected)
         .BecauseOf(because, becauseArgs)
-        .FailWith("Did not expect {context} to be {0}{reason}, but found {1}.", unexpected, Subject);
+        .FailWith("Did not expect {context} to be {0} {reason}, but found {1}.", unexpected, Subject);
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -31,7 +31,7 @@ public class StringAssertions<TAssertions>(string? subject) : ReferenceTypeAsser
     {
         ForCondition(Subject != null && Subject.Contains(expectedSubstring))
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context} to contain substring {0}{reason}, but it did not.", expectedSubstring);
+        .FailWith("Expected {context} to contain substring {0} {reason}, but it did not.", expectedSubstring);
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -40,7 +40,7 @@ public class StringAssertions<TAssertions>(string? subject) : ReferenceTypeAsser
     {
         ForCondition(Subject != null && Subject.StartsWith(expectedPrefix))
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context} to start with {0}{reason}, but it did not.", expectedPrefix);
+        .FailWith("Expected {context} to start with {0} {reason}, but it did not.", expectedPrefix);
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -48,7 +48,7 @@ public class StringAssertions<TAssertions>(string? subject) : ReferenceTypeAsser
     {
         ForCondition(Subject != null && Subject.EndsWith(expectedSuffix))
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context} to end with {0}{reason}, but it did not.", expectedSuffix);
+        .FailWith("Expected {context} to end with {0} {reason}, but it did not.", expectedSuffix);
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -57,7 +57,7 @@ public class StringAssertions<TAssertions>(string? subject) : ReferenceTypeAsser
     {
         ForCondition(Subject != null && Subject.Length == expectedLength)
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context} to have length {0}{reason}, but found length {1}.", expectedLength, Subject?.Length);
+        .FailWith("Expected {context} to have length {0} {reason}, but found length {1}.", expectedLength, Subject?.Length);
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -84,7 +84,7 @@ public class StringAssertions<TAssertions>(string? subject) : ReferenceTypeAsser
     {
         ForCondition(Subject != null && System.Text.RegularExpressions.Regex.IsMatch(Subject, pattern))
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context} to match regex pattern {0}{reason}, but it did not.", pattern);
+        .FailWith("Expected {context} to match regex pattern {0} {reason}, but it did not.", pattern);
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -93,7 +93,7 @@ public class StringAssertions<TAssertions>(string? subject) : ReferenceTypeAsser
     {
         ForCondition(Subject != null && !System.Text.RegularExpressions.Regex.IsMatch(Subject, pattern))
         .BecauseOf(because, becauseArgs)
-        .FailWith("Did not expect {context} to match regex pattern {0}{reason}, but it did.", pattern);
+        .FailWith("Did not expect {context} to match regex pattern {0} {reason}, but it did.", pattern);
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }

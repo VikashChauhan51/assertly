@@ -1,8 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using VReflector;
-
-
 namespace Assertly.Core;
 public abstract class ReferenceTypeAssertions<TSubject, TAssertions>(TSubject? subject) : AssertionsBase<TSubject>(subject)
     where TAssertions : ReferenceTypeAssertions<TSubject, TAssertions>
@@ -16,7 +14,6 @@ public abstract class ReferenceTypeAssertions<TSubject, TAssertions>(TSubject? s
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
-
     public AndConstraint<TAssertions> NotBeNull([StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
         ForCondition(Subject is not null)
@@ -25,7 +22,6 @@ public abstract class ReferenceTypeAssertions<TSubject, TAssertions>(TSubject? s
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
-
     public AndConstraint<TAssertions> BeSameAs(TSubject expected, [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
         ForCondition(Is.Same(Subject, expected))
@@ -34,7 +30,6 @@ public abstract class ReferenceTypeAssertions<TSubject, TAssertions>(TSubject? s
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
-
     public AndConstraint<TAssertions> NotBeSameAs(TSubject unexpected, [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
         ForCondition(!Is.Same(Subject, unexpected))
@@ -43,7 +38,6 @@ public abstract class ReferenceTypeAssertions<TSubject, TAssertions>(TSubject? s
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
-
     public AndConstraint<TAssertions> BeOfType(Type expectedType, [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
         ArgumentNullException.ThrowIfNull(expectedType);
@@ -66,7 +60,6 @@ public abstract class ReferenceTypeAssertions<TSubject, TAssertions>(TSubject? s
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
-
     public AndConstraint<TAssertions> NotBeOfType(Type unexpectedType, [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
         ArgumentNullException.ThrowIfNull(unexpectedType);
@@ -89,8 +82,6 @@ public abstract class ReferenceTypeAssertions<TSubject, TAssertions>(TSubject? s
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
-
-
     public AndConstraint<TAssertions> BeAssignableTo(Type type, [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
         ArgumentNullException.ThrowIfNull(type);
@@ -99,37 +90,34 @@ public abstract class ReferenceTypeAssertions<TSubject, TAssertions>(TSubject? s
         .BecauseOf(because, becauseArgs)
         .FailWith("Expected {context} to be assignable to {0} {reason}, but found <null>.", type);
 
-        ForCondition(Subject is not null && IsType.AssignableTo(Subject.GetType(), type))
+        ForCondition(Subject is not null && IsType.AssignableTo(type, Subject.GetType()))
         .BecauseOf(because, becauseArgs)
         .FailWith("Expected {context} to be assignable to {0} {reason}, but {1} is not.", type, EnsureType(Subject?.GetType()));
 
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
-
     public AndConstraint<TAssertions> NotBeAssignableTo(Type type,
         [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
         ArgumentNullException.ThrowIfNull(type);
-            ForCondition(Subject is not null)
-            .BecauseOf(because, becauseArgs)
-            .FailWith("Expected {context} to not be assignable to {0} {reason}, but found <null>.", type);
+        ForCondition(Subject is not null)
+        .BecauseOf(because, becauseArgs)
+        .FailWith("Expected {context} to not be assignable to {0} {reason}, but found <null>.", type);
 
         Type subjectType = Subject!.GetType();
 
-        //TODO: need to change implmenttaion
-            bool isAssignable = type.IsGenericTypeDefinition
-                ? IsType.AssignableTo(subjectType, type)         //IsType.AssignableToOpenGeneric(subjectType,type)
-                : IsType.AssignableTo(subjectType,type);
-         
-                ForCondition(!isAssignable)
-                .BecauseOf(because, becauseArgs)
-                .FailWith("Expected {context} to not be assignable to {0} {reason}, but {1} is.", type, Subject.GetType());
-        
+        bool isAssignable = type.IsGenericTypeDefinition
+            ? IsType.AssignableToOpenGeneric(subjectType, type)
+            : IsType.AssignableTo(type, subjectType);
+
+        ForCondition(!isAssignable)
+        .BecauseOf(because, becauseArgs)
+        .FailWith("Expected {context} to not be assignable to {0} {reason}, but {1} is.", type, Subject.GetType());
+
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
-
     public AndConstraint<TAssertions> Match<T>(Expression<Func<T, bool>> predicate,
         [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
         where T : TSubject
@@ -138,7 +126,7 @@ public abstract class ReferenceTypeAssertions<TSubject, TAssertions>(TSubject? s
 
         ForCondition(predicate.Compile()((T)Subject!))
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context:object} to match {1}{reason}, but found {0}.", EnsureType(Subject), predicate);
+        .FailWith("Expected {context:object} to match {1} {reason}, but found {0}.", EnsureType(Subject), predicate);
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }

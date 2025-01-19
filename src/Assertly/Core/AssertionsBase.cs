@@ -13,7 +13,7 @@ public abstract class AssertionsBase<T>
         Subject = subject;
     }
 
-    public AssertionsBase<T> ForCondition(bool condition)
+    internal AssertionsBase<T> ForCondition(bool condition)
     {
         if (!succeeded.HasValue || succeeded.Value)
         {
@@ -22,7 +22,7 @@ public abstract class AssertionsBase<T>
         return this;
     }
 
-    public AssertionsBase<T> BecauseOf(string because, params object[] becauseArgs)
+    internal AssertionsBase<T> BecauseOf(string because, params object[] becauseArgs)
     {
         reason = () =>
         {
@@ -42,7 +42,7 @@ public abstract class AssertionsBase<T>
 
         return this;
     }
-    public void FailWith(string message, params object[] messageArgs)
+    internal void FailWith(string message, params object[] messageArgs)
     {
         if (succeeded.HasValue && !succeeded.Value)
         {
@@ -57,7 +57,7 @@ public abstract class AssertionsBase<T>
         }
     }
 
-    public void FailWith(Action<string> onFailuer, string message, params object[] messageArgs)
+    internal void FailWith(Action<string> onFailuer, string message, params object[] messageArgs)
     {
         if (succeeded.HasValue && !succeeded.Value)
         {

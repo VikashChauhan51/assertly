@@ -17,7 +17,7 @@ public class AssemblyAssertions<TSubject, TAssertions>(TSubject? subject) : Refe
     {
         ForCondition(Subject is not null && Subject.GetName().Name == expectedName)
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context} to have name {0}{reason}, but found {1}.", expectedName, Subject?.GetName().Name);
+        .FailWith("Expected {context} to have name {0} {reason}, but found {1}.", expectedName, Subject?.GetName().Name);
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -26,7 +26,7 @@ public class AssemblyAssertions<TSubject, TAssertions>(TSubject? subject) : Refe
     {
         ForCondition(Subject is not null && Subject.GetName().Version.ToString() == expectedVersion)
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context} to have version {0}{reason}, but found {1}.", expectedVersion, Subject?.GetName().Version);
+        .FailWith("Expected {context} to have version {0} {reason}, but found {1}.", expectedVersion, Subject?.GetName().Version);
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -35,7 +35,7 @@ public class AssemblyAssertions<TSubject, TAssertions>(TSubject? subject) : Refe
     {
         ForCondition(Subject is not null && Subject.GetCustomAttributes(typeof(TAttribute), false).Any())
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context} to contain attribute {0}{reason}, but it was not found.", typeof(TAttribute).Name);
+        .FailWith("Expected {context} to contain attribute {0} {reason}, but it was not found.", typeof(TAttribute).Name);
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
@@ -44,7 +44,7 @@ public class AssemblyAssertions<TSubject, TAssertions>(TSubject? subject) : Refe
     {
         ForCondition(expected is not null && Subject is not null && expected.Equals(Subject))
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context} to be equivalent to {0}{reason}, but found {1}.", expected.FullName, Subject?.FullName);
+        .FailWith("Expected {context} to be equivalent to {0} {reason}, but found {1}.", expected.FullName, Subject?.FullName);
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
