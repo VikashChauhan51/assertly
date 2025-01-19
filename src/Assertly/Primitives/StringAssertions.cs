@@ -97,4 +97,60 @@ public class StringAssertions<TAssertions>(string? subject) : ReferenceTypeAsser
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
+
+    public AndConstraint<TAssertions> BeUpperCased([StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
+    {
+
+        ForCondition(Subject is not null && !Subject.Any(char.IsLower))
+        .BecauseOf(because, becauseArgs)
+        .FailWith("Expected all alphabetic characters in {context:string} to be upper-case{reason}, but found {0}.", Subject);
+
+        return new AndConstraint<TAssertions>((TAssertions)this);
+    }
+    public AndConstraint<TAssertions> NotBeUpperCased([StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
+    {
+        ForCondition(Subject is null || HasMixedOrNoCase(Subject))
+        .BecauseOf(because, becauseArgs)
+        .FailWith("Expected some characters in {context:string} to be lower-case{reason}.");
+
+        return new AndConstraint<TAssertions>((TAssertions)this);
+    }
+
+    public AndConstraint<TAssertions> BeLowerCased([StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
+    {
+
+        ForCondition(Subject is not null && !Subject.Any(char.IsUpper))
+        .BecauseOf(because, becauseArgs)
+        .FailWith("Expected all alphabetic characters in {context:string} to be lower cased{reason}, but found {0}.", Subject);
+
+        return new AndConstraint<TAssertions>((TAssertions)this);
+    }
+    public AndConstraint<TAssertions> NotBeLowerCased([StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
+    {
+
+        ForCondition(Subject is null || HasMixedOrNoCase(Subject))
+        .BecauseOf(because, becauseArgs)
+        .FailWith("Expected some characters in {context:string} to be upper-case{reason}.");
+
+        return new AndConstraint<TAssertions>((TAssertions)this);
+    }
+
+    private static bool HasMixedOrNoCase(string value)
+    {
+        var hasUpperCase = false;
+        var hasLowerCase = false;
+
+        foreach (var ch in value)
+        {
+            hasUpperCase |= char.IsUpper(ch);
+            hasLowerCase |= char.IsLower(ch);
+
+            if (hasUpperCase && hasLowerCase)
+            {
+                return true;
+            }
+        }
+
+        return !hasUpperCase && !hasLowerCase;
+    }
 }

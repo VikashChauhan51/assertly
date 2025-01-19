@@ -1,6 +1,5 @@
 ﻿using Assertly.Core;
 using System.Diagnostics.CodeAnalysis;
-using Reflector;
 
 namespace Assertly.Types;
 
@@ -13,10 +12,8 @@ public class ComparableTypeAssertions<T, TAssertions>(IComparable<T> value) : Re
     where TAssertions : ComparableTypeAssertions<T, TAssertions>
 {
     private const int Equal = 0;
-
     public AndConstraint<TAssertions> Be(T expected, [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
-
         ForCondition(IsEquals(Subject, expected))
         .BecauseOf(because, becauseArgs)
         .FailWith("Expected {context:object} to be equal to {0} {reason}, but found {1}.", expected, Subject);
