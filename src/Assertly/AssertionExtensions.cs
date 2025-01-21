@@ -284,4 +284,8 @@ public static class AssertionExtensions
     {
         return new GenericCollectionAssertions<T>(actualValue);
     }
+    public static FunctionAssertions<T> Assert<T>([NotNull] this Func<T> func)
+    {
+        return new FunctionAssertions<T>(func);
+    }
 }
