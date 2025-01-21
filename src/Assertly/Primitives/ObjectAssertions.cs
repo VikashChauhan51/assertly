@@ -17,7 +17,7 @@ where TAssertions : ObjectAssertions<TSubject, TAssertions>
         [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
 
-        ForCondition(Is.Equal(Subject, expected))
+        ForCondition(IsObject.IsEqual(Subject, expected))
             .BecauseOf(because, becauseArgs)
             .FailWith("Expected {context} to be {0}{reason}, but found {1}.", expected, Subject);
 
@@ -28,7 +28,7 @@ where TAssertions : ObjectAssertions<TSubject, TAssertions>
         [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
 
-        ForCondition(!Is.Equal(Subject, expected))
+        ForCondition(!Subject.IsSame(expected))
             .BecauseOf(because, becauseArgs)
             .FailWith("Expected {context} to be {0}{reason}, but found {1}.", expected, Subject);
 
@@ -36,7 +36,7 @@ where TAssertions : ObjectAssertions<TSubject, TAssertions>
     }
     public AndConstraint<TAssertions> BeEquivalentTo(TSubject expected, [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
-        ForCondition(Is.Same(Subject, expected))
+        ForCondition(Subject.IsSame(expected))
         .BecauseOf(because, becauseArgs)
         .FailWith("Expected {context} to be equivalent to {0} {reason}, but found {1}.", EnsureType(expected), EnsureType(Subject));
 
@@ -44,7 +44,7 @@ where TAssertions : ObjectAssertions<TSubject, TAssertions>
     }
     public AndConstraint<TAssertions> NotBeEquivalentTo(TSubject unexpected, [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
-        ForCondition(!Is.Same(Subject, unexpected))
+        ForCondition(!Subject.IsSame(unexpected))
         .BecauseOf(because, becauseArgs)
         .FailWith("Did not expect {context} to be equivalent to {0} {reason}.", EnsureType(unexpected));
 

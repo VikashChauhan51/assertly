@@ -29,7 +29,7 @@ public class GenericCollectionAssertions<TCollection, T, TAssertions>(TCollectio
            .BecauseOf(because, becauseArgs)
             .FailWith("Expected type to be {0} {reason}, but found a null element.", expectedType.FullName);
 
-        ForCondition(Subject!.All(x => expectedType == Is.GetType(x)))
+        ForCondition(Subject!.All(x => expectedType == x.GetType()))
            .BecauseOf(because, becauseArgs)
             .FailWith("Expected type to be {0} {reason}, but found some element not match.", expectedType.FullName);
 

@@ -24,7 +24,7 @@ public abstract class ReferenceTypeAssertions<TSubject, TAssertions>(TSubject? s
     }
     public AndConstraint<TAssertions> BeSameAs(TSubject expected, [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
-        ForCondition(Is.Same(Subject, expected))
+        ForCondition(Subject.IsSame(expected))
         .BecauseOf(because, becauseArgs)
         .FailWith("Expected {context} to refer to {0} {reason}, but found {1}.", EnsureType(expected), EnsureSubject());
 
@@ -32,7 +32,7 @@ public abstract class ReferenceTypeAssertions<TSubject, TAssertions>(TSubject? s
     }
     public AndConstraint<TAssertions> NotBeSameAs(TSubject unexpected, [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
-        ForCondition(!Is.Same(Subject, unexpected))
+        ForCondition(!Subject.IsSame(unexpected))
         .BecauseOf(because, becauseArgs)
         .FailWith("Did not expect {context} to refer to {0} {reason}.", EnsureType(unexpected));
 
@@ -48,7 +48,7 @@ public abstract class ReferenceTypeAssertions<TSubject, TAssertions>(TSubject? s
 
         Type subjectType = Subject!.GetType();
 
-        if (expectedType.IsGenericTypeDefinition && IsType.GenericType(expectedType))
+        if (expectedType.IsGenericTypeDefinition && expectedType.IsGenericType)
         {
             subjectType.GetGenericTypeDefinition().Assert().Be(expectedType, because, becauseArgs);
         }
@@ -70,7 +70,7 @@ public abstract class ReferenceTypeAssertions<TSubject, TAssertions>(TSubject? s
 
         Type subjectType = Subject!.GetType();
 
-        if (unexpectedType.IsGenericTypeDefinition && IsType.GenericType(unexpectedType))
+        if (unexpectedType.IsGenericTypeDefinition && unexpectedType.IsGenericType)
         {
             subjectType.GetGenericTypeDefinition().Assert().NotBe(unexpectedType, because, becauseArgs);
         }
@@ -108,8 +108,8 @@ public abstract class ReferenceTypeAssertions<TSubject, TAssertions>(TSubject? s
         Type subjectType = Subject!.GetType();
 
         bool isAssignable = type.IsGenericTypeDefinition
-            ? IsType.AssignableToOpenGeneric(subjectType, type)
-            : IsType.AssignableTo(type, subjectType);
+            ? subjectType.IsAssignableToOpenGeneric(type)
+            : type.AssignableTo(subjectType);
 
         ForCondition(!isAssignable)
         .BecauseOf(because, becauseArgs)

@@ -1,11 +1,12 @@
 ﻿using Assertly.Core;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Numerics;
 using VReflector;
 
 namespace Assertly;
 public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : AssertionsBase<T?>(subject)
-    where T : struct, IComparable<T>
+    where T : struct, INumber<T>
     where TAssertions : NumericAssertionsBase<T, TAssertions>
 {
     public AndConstraint<TAssertions> Be(T expected, [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
@@ -44,7 +45,7 @@ public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : Assert
     }
     public AndConstraint<TAssertions> BePositive([StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
-        ForCondition(Subject is T subject && subject.CompareTo(default) > 0)
+        ForCondition(Subject is T subject && subject.IsPositive())
              .BecauseOf(because, becauseArgs)
              .FailWith("Expected {context:value} to be positive{reason}, but found {0}.", AssertionHelper.EnsureType(Subject));
 
@@ -52,7 +53,7 @@ public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : Assert
     }
     public AndConstraint<TAssertions> BeNegative([StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
-        ForCondition(Subject is T value && !IsNumerics.IsNaN(value) && value.CompareTo(default) < 0)
+        ForCondition(Subject is T value && !value.IsNaN() && value.IsNegative())
             .BecauseOf(because, becauseArgs)
             .FailWith("Expected {context:value} to be negative{reason}, but found {0}.", AssertionHelper.EnsureType(Subject));
 
@@ -60,12 +61,12 @@ public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : Assert
     }
     public AndConstraint<TAssertions> BeLessThan(T expected, [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
-        if (IsNumerics.IsNaN(expected))
+        if (expected.IsNaN())
         {
             throw new ArgumentException("A value can never be less than NaN", nameof(expected));
         }
 
-        ForCondition(Subject is T value && !IsNumerics.IsNaN(value) && Is.LessThan(value, expected))
+        ForCondition(Subject is T value && !value.IsNaN() && value.LessThan(expected))
             .BecauseOf(because, becauseArgs)
             .FailWith("Expected {context:value} to be less than {0} {reason}, but found {1}" + GenerateDifferenceMessage(expected),
                 expected, AssertionHelper.EnsureType(Subject));
@@ -75,12 +76,12 @@ public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : Assert
     public AndConstraint<TAssertions> BeLessThanOrEqualTo(T expected,
         [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
-        if (IsNumerics.IsNaN(expected))
+        if (expected.IsNaN())
         {
             throw new ArgumentException("A value can never be less than or equal to NaN", nameof(expected));
         }
 
-        ForCondition(Subject is T value && !IsNumerics.IsNaN(value) && Is.LessThanOrEqualTo(value, expected))
+        ForCondition(Subject is T value && !value.IsNaN() && value.LessThanOrEqual(expected))
             .BecauseOf(because, becauseArgs)
             .FailWith(
                 "Expected {context:value} to be less than or equal to {0} {reason}, but found {1}" +
@@ -91,12 +92,12 @@ public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : Assert
     public AndConstraint<TAssertions> BeGreaterThan(T expected,
         [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
-        if (IsNumerics.IsNaN(expected))
+        if (expected.IsNaN())
         {
             throw new ArgumentException("A value can never be greater than NaN", nameof(expected));
         }
 
-        ForCondition(Subject is T subject && Is.GreaterThan(subject, expected))
+        ForCondition(Subject is T subject && subject.GreaterThan(expected))
             .BecauseOf(because, becauseArgs)
             .FailWith(
                 "Expected {context:value} to be greater than {0} {reason}, but found {1}" + GenerateDifferenceMessage(expected),
@@ -112,7 +113,7 @@ public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : Assert
             throw new ArgumentException("A value can never be greater than or equal to a NaN", nameof(expected));
         }
 
-        ForCondition(Subject is T subject && Is.GreaterThanOrEqualTo(subject, expected))
+        ForCondition(Subject is T subject && subject.GreaterThanOrEqual(expected))
             .BecauseOf(because, becauseArgs)
             .FailWith(
                 "Expected {context:value} to be greater than or equal to {0} {reason}, but found {1}" +
@@ -123,12 +124,12 @@ public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : Assert
     public AndConstraint<TAssertions> BeInRange(T minimumValue, T maximumValue,
         [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
-        if (IsNumerics.IsNaN(minimumValue) || IsNumerics.IsNaN(maximumValue))
+        if (minimumValue.IsNaN() || maximumValue.IsNaN())
         {
             throw new ArgumentException("A range cannot begin or end with NaN");
         }
 
-        ForCondition(Subject is T value && Is.InRange(value, minimumValue, maximumValue))
+        ForCondition(Subject is T value && value.IsInRange(minimumValue, maximumValue))
             .BecauseOf(because, becauseArgs)
             .FailWith("Expected {context:value} to be between {0} and {1} {reason}, but found {2}.",
                 minimumValue, maximumValue, AssertionHelper.EnsureType(Subject));
@@ -138,12 +139,12 @@ public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : Assert
     public AndConstraint<TAssertions> NotBeInRange(T minimumValue, T maximumValue,
         [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
-        if (IsNumerics.IsNaN(minimumValue) || IsNumerics.IsNaN(maximumValue))
+        if (minimumValue.IsNaN() || maximumValue.IsNaN())
         {
             throw new ArgumentException("A range cannot begin or end with NaN");
         }
 
-        ForCondition(Subject is T value && !Is.InRange(value, minimumValue, maximumValue))
+        ForCondition(Subject is T value && !value.IsInRange(minimumValue, maximumValue))
             .BecauseOf(because, becauseArgs)
             .FailWith("Expected {context:value} to not be between {0} and {1} {reason}, but found {2}.",
                 minimumValue, maximumValue, AssertionHelper.EnsureType(Subject));
@@ -167,14 +168,14 @@ public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : Assert
     {
         ArgumentNullException.ThrowIfNull(expectedType);
 
-        Type subjectType = Subject?.GetType();
+        Type subjectType = Subject!.GetType();
         if (expectedType.IsGenericTypeDefinition && subjectType?.IsGenericType == true)
         {
             subjectType.GetGenericTypeDefinition().Assert().Be(expectedType, because, becauseArgs);
         }
         else
         {
-            subjectType.Assert().Be(expectedType, because, becauseArgs);
+            subjectType!.Assert().Be(expectedType, because, becauseArgs);
         }
 
         return new AndConstraint<TAssertions>((TAssertions)this);
@@ -201,9 +202,6 @@ public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : Assert
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
 
-
-
-
     private string GenerateDifferenceMessage(T? expected)
     {
         const string noDifferenceMessage = ".";
@@ -213,9 +211,14 @@ public abstract class NumericAssertionsBase<T, TAssertions>(T? subject) : Assert
             return noDifferenceMessage;
         }
 
-        var difference = IsNumerics.Difference(subject, expectedValue);
-        return difference is null ? noDifferenceMessage : $" (difference of {difference}).";
+        var difference = CalculateDifference<T>(subject, expectedValue);
+        return difference == default ? noDifferenceMessage : $" (difference of {difference}).";
     }
+    private static T CalculateDifference<T>(T number1, T number2) where T : INumber<T>
+    {
+        return number1 - number2;
+    }
+
 }
 
 

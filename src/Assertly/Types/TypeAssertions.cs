@@ -18,7 +18,7 @@ public class TypeAssertions(Type type) : ReferenceTypeAssertions<Type, TypeAsser
         [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
 
-        ForCondition(Is.Same(Subject, expected))
+        ForCondition(Subject.IsSame(expected))
         .BecauseOf(because, becauseArgs)
         .FailWith(GetFailureMessageIfTypesAreDifferent(Subject, expected));
 
@@ -70,7 +70,7 @@ public class TypeAssertions(Type type) : ReferenceTypeAssertions<Type, TypeAsser
         string nameOfUnexpectedType = unexpected is not null ? $"[{unexpected.AssemblyQualifiedName}]" : AssertionConstants.Null;
 
         BecauseOf(because, becauseArgs)
-        .ForCondition(!Is.Same(Subject, unexpected))
+        .ForCondition(!Subject.IsSame(unexpected))
         .FailWith("Expected type not to be " + nameOfUnexpectedType + "{reason}, but it is.");
 
         return new AndConstraint<TypeAssertions>(this);
@@ -135,7 +135,7 @@ public class TypeAssertions(Type type) : ReferenceTypeAssertions<Type, TypeAsser
             .BecauseOf(because, becauseArgs)
             .FailWith("Expected type to be class {reason}, but {context:type} is <null>.");
 
-        ForCondition(IsClass())
+        ForCondition(Subject!.IsUserdefinedClass())
           .BecauseOf(because, becauseArgs)
           .FailWith("Expected type to be class {reason}, but {context:type} is not.");
 
@@ -149,7 +149,7 @@ public class TypeAssertions(Type type) : ReferenceTypeAssertions<Type, TypeAsser
             .BecauseOf(because, becauseArgs)
             .FailWith("Expected type to be class {reason}, but {context:type} is <null>.");
 
-        ForCondition(!IsClass())
+        ForCondition(!Subject!.IsUserdefinedClass())
           .BecauseOf(because, becauseArgs)
           .FailWith("Expected type not to be class {reason}, but {context:type} is a class.");
 
@@ -158,7 +158,7 @@ public class TypeAssertions(Type type) : ReferenceTypeAssertions<Type, TypeAsser
     public AndConstraint<TypeAssertions> BeSealed([StringSyntax("CompositeFormat")] string because = "",
         params object[] becauseArgs)
     {
-        ForCondition(IsType.Sealed(Subject!))
+        ForCondition(Subject?.IsSealed ?? false)
             .BecauseOf(because, becauseArgs)
             .FailWith("Expected type to be sealed{reason}, but {context:type} is <null>.");
 
@@ -168,7 +168,7 @@ public class TypeAssertions(Type type) : ReferenceTypeAssertions<Type, TypeAsser
     public AndConstraint<TypeAssertions> NotBeSealed([StringSyntax("CompositeFormat")] string because = "",
         params object[] becauseArgs)
     {
-        ForCondition(!IsType.Sealed(Subject!))
+        ForCondition(!(Subject?.IsSealed ?? false))
          .BecauseOf(because, becauseArgs)
          .FailWith("Expected type not to be sealed{reason}, but {context:type} is <null>.");
 
@@ -180,7 +180,7 @@ public class TypeAssertions(Type type) : ReferenceTypeAssertions<Type, TypeAsser
     {
 
 
-        ForCondition(IsType.Abstract(Subject!))
+        ForCondition(Subject is not null && Subject.IsAbstract)
         .BecauseOf(because, becauseArgs)
         .FailWith("Expected type to be abstract{reason}, but {context:type} is <null>.");
 
@@ -191,7 +191,7 @@ public class TypeAssertions(Type type) : ReferenceTypeAssertions<Type, TypeAsser
     public AndConstraint<TypeAssertions> NotBeAbstract([StringSyntax("CompositeFormat")] string because = "",
         params object[] becauseArgs)
     {
-        ForCondition(!IsType.Abstract(Subject!))
+        ForCondition(Subject is not null && !Subject.IsAbstract)
             .BecauseOf(because, becauseArgs)
             .ForCondition(Subject is not null)
             .FailWith("Expected type not to be abstract{reason}, but {context:type} is <null>.");
@@ -201,7 +201,7 @@ public class TypeAssertions(Type type) : ReferenceTypeAssertions<Type, TypeAsser
     public AndConstraint<TypeAssertions> BeStatic([StringSyntax("CompositeFormat")] string because = "",
         params object[] becauseArgs)
     {
-        ForCondition(IsType.Static(Subject!))
+        ForCondition(Subject.IsStatic())
             .BecauseOf(because, becauseArgs)
             .FailWith("Expected type to be static{reason}, but {context:type} is <null>.");
 
@@ -211,7 +211,7 @@ public class TypeAssertions(Type type) : ReferenceTypeAssertions<Type, TypeAsser
     public AndConstraint<TypeAssertions> NotBeStatic([StringSyntax("CompositeFormat")] string because = "",
         params object[] becauseArgs)
     {
-        ForCondition(!IsType.Static(Subject!))
+        ForCondition(!Subject.IsStatic())
             .BecauseOf(because, becauseArgs)
             .FailWith("Expected type not to be static{reason}, but {context:type} is <null>.");
 
@@ -229,11 +229,11 @@ public class TypeAssertions(Type type) : ReferenceTypeAssertions<Type, TypeAsser
     {
         ArgumentNullException.ThrowIfNull(interfaceType);
 
-        ForCondition(IsType.Interface(interfaceType))
+        ForCondition(interfaceType.IsInterface)
             .BecauseOf(because, becauseArgs)
             .FailWith("Expected {0} to be an interface, but it is not.", interfaceType);
 
-        ForCondition(IsType.Interface(interfaceType) && interfaceType != Subject && interfaceType.IsAssignableFrom(Subject))
+        ForCondition(interfaceType.IsInterface && interfaceType != Subject && interfaceType.IsAssignableFrom(Subject))
          .BecauseOf(because, becauseArgs)
          .FailWith("Expected {0} to implement interface {1} {reason}, but {0} does not implement it.", Subject, interfaceType);
 
@@ -254,11 +254,11 @@ public class TypeAssertions(Type type) : ReferenceTypeAssertions<Type, TypeAsser
         ForCondition(Subject is not null)
            .BecauseOf(because, becauseArgs)
            .FailWith("Expected {0} to be an interface, but it is null.", interfaceType);
-        ForCondition(IsType.Interface(interfaceType))
+        ForCondition(interfaceType.IsInterface)
             .BecauseOf(because, becauseArgs)
             .FailWith("Expected {0} to be an interface, but it is not.", interfaceType);
 
-        ForCondition(IsType.Interface(interfaceType) && interfaceType != Subject && !interfaceType.IsAssignableFrom(Subject))
+        ForCondition(interfaceType.IsInterface && interfaceType != Subject && !interfaceType.IsAssignableFrom(Subject))
             .BecauseOf(because, becauseArgs)
             .FailWith("Expected {0} to not implement interface {1} {reason}, but {0} does implement it.", Subject, interfaceType);
 
@@ -276,7 +276,7 @@ public class TypeAssertions(Type type) : ReferenceTypeAssertions<Type, TypeAsser
     {
         ArgumentNullException.ThrowIfNull(baseType);
 
-        ForCondition(!IsType.Interface(baseType))
+        ForCondition(!baseType.IsInterface)
           .BecauseOf(because, becauseArgs)
           .FailWith("Expected {0} to be a class, but it is an interface.", baseType);
 
@@ -305,7 +305,7 @@ public class TypeAssertions(Type type) : ReferenceTypeAssertions<Type, TypeAsser
           .BecauseOf(because, becauseArgs)
           .FailWith("Expected {0} to be an class, but it is null.", baseType);
 
-        ForCondition(!IsType.Interface(baseType))
+        ForCondition(!baseType.IsInterface)
           .BecauseOf(because, becauseArgs)
           .FailWith("Expected {0} to be a class, but it is an interface.", baseType);
 
@@ -386,17 +386,5 @@ public class TypeAssertions(Type type) : ReferenceTypeAssertions<Type, TypeAsser
 
         return $"Expected type to be {expectedType}{{reason}}, but found {actualType}.";
     }
-    private bool IsClass()
-    {
-        if (Subject is null ||
-            Subject.IsInterface ||
-            Subject.IsValueType ||
-            typeof(Delegate).IsAssignableFrom(Subject.BaseType) ||
-            IsType.Primitive(Subject))
-        {
-            return false;
-        }
-
-        return IsType.Class(Subject) || IsType.RecordClass(Subject);
-    }
+  
 }
