@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using VReflector;
 
 namespace Assertly;
 public abstract class AssertionsBase<T>
@@ -47,14 +48,14 @@ public abstract class AssertionsBase<T>
     {
         if (succeeded.HasValue && !succeeded.Value)
         {
-            var (caller, callerIdentifier) = DetermineCallerIdentity();
+            var callerIdentifier = DetermineCallerIdentity();
 
             var formattedMessage = new FailureMessageFormatter()
                  .WithReason(reason?.Invoke() ?? string.Empty)
                  .WithIdentifier(callerIdentifier ?? "object")
                  .Format(message, messageArgs);
             Reset();
-            throw new AssertlyException($"{caller}:{formattedMessage}");
+            throw new AssertlyException(formattedMessage);
         }
     }
 
@@ -62,13 +63,13 @@ public abstract class AssertionsBase<T>
     {
         if (succeeded.HasValue && !succeeded.Value)
         {
-            var (caller, callerIdentifier) = DetermineCallerIdentity();
+            var callerIdentifier = DetermineCallerIdentity();
             var formattedMessage = new FailureMessageFormatter()
                  .WithReason(reason?.Invoke() ?? string.Empty)
                  .WithIdentifier(callerIdentifier ?? "object")
                  .Format(message, messageArgs);
             Reset();
-            onFailuer($"{caller}:{formattedMessage}");
+            onFailuer(formattedMessage);
         }
     }
 
@@ -85,27 +86,18 @@ public abstract class AssertionsBase<T>
     {
         return Subject?.GetHashCode() ?? 0;
     }
-    private static (string caller, string? callerIdentifier) DetermineCallerIdentity()
+    private static string? DetermineCallerIdentity()
     {
-        string? caller = null;
+   
         string? callerIdentifier = null;
         try
         {
-            var stack = new StackTrace(fNeedFileInfo: true);
-            var allStackFrames = stack.GetFrames();
-
+            var allStackFrames = IsStackTrace.GetStackFrames();
             int lastUserStackFrameBeforeFrameworkCodeIndex = Array.FindIndex(allStackFrames,
                 frame => frame.GetMethod()?.DeclaringType?.Assembly != typeof(AssertionsBase<>).Assembly);
             if (lastUserStackFrameBeforeFrameworkCodeIndex >= 0)
             {
                 var frame = allStackFrames[lastUserStackFrameBeforeFrameworkCodeIndex];
-                var method = frame.GetMethod();
-                if (method != null)
-                {
-                    var property = method.Name;
-                    var declaringType = method.DeclaringType?.FullName;
-                    caller = $"{declaringType}.{property}";
-                }
                 callerIdentifier = ExtractVariableNameFrom(frame);
             }
         }
@@ -113,7 +105,7 @@ public abstract class AssertionsBase<T>
         {
             // Ignore exceptions
         }
-        return (caller ?? string.Empty, callerIdentifier);
+        return callerIdentifier;
     }
     private static string? ExtractVariableNameFrom(StackFrame frame)
     {

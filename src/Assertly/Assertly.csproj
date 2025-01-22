@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	  <VersionPrefix>0.0.0.2</VersionPrefix>
+	  <VersionPrefix>0.0.0.3</VersionPrefix>
 	  <PackageId>Assertly</PackageId>
 	  <Title>Assertly</Title>
 	  <Authors>Vikash Chauhan</Authors>
@@ -26,7 +26,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="VReflector" Version="2.1.0" />
+    <PackageReference Include="VReflector" Version="2.1.1.2" />
   </ItemGroup>
 
 	<ItemGroup>

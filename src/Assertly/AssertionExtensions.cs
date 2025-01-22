@@ -284,8 +284,21 @@ public static class AssertionExtensions
     {
         return new GenericCollectionAssertions<T>(actualValue);
     }
-    public static FunctionAssertions<T> Assert<T>([NotNull] this Func<T> func)
+    public static GenericDictionaryAssertions<IDictionary<TKey, TValue>, TKey, TValue> Assert<TKey, TValue>(
+        [NotNull] this IDictionary<TKey, TValue> actualValue)
     {
-        return new FunctionAssertions<T>(func);
+        return new GenericDictionaryAssertions<IDictionary<TKey, TValue>, TKey, TValue>(actualValue);
+    }
+    public static PropertyInfoAssertions Assert([NotNull] this PropertyInfo propertyInfo)
+    {
+        return new PropertyInfoAssertions(propertyInfo);
+    }
+    public static MethodInfoAssertions Assert([NotNull] this MethodInfo methodInfo)
+    {
+        return new MethodInfoAssertions(methodInfo);
+    }
+    public static ConstructorInfoAssertions Assert([NotNull] this ConstructorInfo constructorInfo)
+    {
+        return new ConstructorInfoAssertions(constructorInfo);
     }
 }

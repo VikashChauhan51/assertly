@@ -18,7 +18,7 @@ public abstract class ReferenceTypeAssertions<TSubject, TAssertions>(TSubject? s
     {
         ForCondition(Subject is not null)
         .BecauseOf(because, becauseArgs)
-        .FailWith("Expected {context} not to be <null>{reason}.");
+        .FailWith("Expected {context} not to be <null>{reason}, but found <null>.");
 
         return new AndConstraint<TAssertions>((TAssertions)this);
     }
